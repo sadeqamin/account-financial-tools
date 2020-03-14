@@ -3,6 +3,7 @@
 # Copyright 2017 Okia SPRL (https://okia.be)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
+import datetime
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -156,3 +157,11 @@ class CreditControlRun(models.Model):
         action = action.read()[0]
         action['domain'] = [('id', 'in', self.line_ids.ids)]
         return action
+    
+    
+    @api.multi
+    def credit_control_run_action(self):
+        run_date = datetime.date.today()
+        cc = self.env['credit.control.run'].create({'date': run_date, 'state': 'draft'})
+        cc.generate_credit_lines()
+
